@@ -38,7 +38,7 @@ jobs:
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy hinvento-spring \
-          --image gcr.io/$GCP_PROJECT_ID/hinvento-spring \
+          --image europe-west3-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/hinvento-spring \
           --platform managed \
           --region europe-west1 \
           --allow-unauthenticated
