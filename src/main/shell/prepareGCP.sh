@@ -4,7 +4,7 @@
 PROJECT_ID="xxx" # Replace with your desired project ID
 BILLING_ACCOUNT_ID="xxx" # Replace with your Billing Account ID
 SERVICE_ACCOUNT_NAME="cloud-run-deployer"
-REGION="europe-west1" # Replace with your preferred region
+REGION="europe-west3" # Replace with your preferred region
 REPO_NAME="docker-repo" # Replace with your desired repository name
 
 # Create GCP project

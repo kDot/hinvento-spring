@@ -32,6 +32,8 @@ jobs:
         IMAGE_NAME=gcr.io/$GCP_PROJECT_ID/hinvento-spring
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
+      env:
+        GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Deploy to Cloud Run
       run: |
