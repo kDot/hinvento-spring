@@ -39,6 +39,7 @@ jobs:
 
     - name: Deploy to Cloud Run
       run: |
+        RELEASE_TAG=${{ github.event.release.tag_name }}
         gcloud run deploy hinvento-spring \
           --image europe-west3-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/hinvento-spring:$RELEASE_TAG \
           --platform managed \
