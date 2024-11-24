@@ -5,6 +5,10 @@ on:
     types: 
       - created
 
+env:
+  GCP_REGION: europe-west3
+  SERVICE_NAME: hinvento-spring
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -25,25 +29,44 @@ jobs:
         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
     - name: Configure Docker for GCP
-      run: gcloud auth configure-docker europe-west3-docker.pkg.dev --quiet
+      run: gcloud auth configure-docker $GCP_REGION-docker.pkg.dev --quiet
 
-    - name: Build an push Docker image
+    - name: Build and Push Docker Image
       run: |
         RELEASE_TAG=${{ github.event.release.tag_name }}
-        IMAGE_NAME=europe-west3-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/hinvento-spring
-        docker build -t $IMAGE_NAME:latest  -t $IMAGE_NAME:$RELEASE_TAG .
+        IMAGE_NAME=$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/$SERVICE_NAME
+        docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$RELEASE_TAG .
         docker push $IMAGE_NAME:latest
         docker push $IMAGE_NAME:$RELEASE_TAG
       env:
         GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        GCP_REGION: ${{ env.GCP_REGION }}
+        SERVICE_NAME: ${{ env.SERVICE_NAME }}
 
     - name: Deploy to Cloud Run
       run: |
         RELEASE_TAG=${{ github.event.release.tag_name }}
-        gcloud run deploy hinvento-spring \
-          --image europe-west3-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/hinvento-spring:$RELEASE_TAG \
+        gcloud run deploy $SERVICE_NAME \
+          --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/docker-repo/$SERVICE_NAME:$RELEASE_TAG \
           --platform managed \
-          --region europe-west3 \
+          --region $GCP_REGION \
           --allow-unauthenticated
       env:
         GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        GCP_REGION: ${{ env.GCP_REGION }}
+        SERVICE_NAME: ${{ env.SERVICE_NAME }}
+
+    - name: Retrieve Cloud Run DNS Name
+      id: get-dns
+      run: |
+        SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+          --region $GCP_REGION \
+          --format='value(status.url)')
+        echo "Cloud Run service URL: $SERVICE_URL"
+        echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+      env:
+        GCP_REGION: ${{ env.GCP_REGION }}
+        SERVICE_NAME: ${{ env.SERVICE_NAME }}
+
+    - name: Log the Service DNS Name
+      run: echo "Deployed service URL: ${{ env.SERVICE_URL }}"
