@@ -8,6 +8,7 @@ on:
 env:
   GCP_REGION: europe-west3
   SERVICE_NAME: hinvento-spring
+  #SERVICE_URL is added at first run; See step "Retrieve Cloud Run DNS Name"
 
 jobs:
   build-and-deploy:
@@ -70,3 +71,5 @@ jobs:
 
     - name: Log the Service DNS Name
       run: echo "Deployed service URL: ${{ env.SERVICE_URL }}"
+      env:
+        SERVICE_URL: ${{ env.SERVICE_URL }}
