@@ -7,6 +7,9 @@
 </head>
 <body>
     <h1>Dashboard</h1>
+    <p>Last Logged In: <span th:text="${lastLoggedIn != null ? #temporals.format(lastLoggedIn, 'yyyy-MM-dd HH:mm:ss') : 'Never'}"></span></p>
+    <p>Current Logged In: <span th:text="${#temporals.format(currentLoggedIn, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+
     <a href="/logout">Logout</a>
 </body>
 </html> 
