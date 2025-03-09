@@ -1,5 +1,5 @@
 # Hinvento with Spring
 
-## GCP Init (from your local machine)
+## Run
 
-Look into src/main/shell/prepareGCP.sh
+```mvn clean compile spring-boot:run```
